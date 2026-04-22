@@ -45,45 +45,52 @@ Upload these files to your S3 bucket under the path: `s3://<your-bucket>/raw/ret
 ## 🏗️ Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                        DATA SOURCES                             │
-│              CSV Files (Orders, Customers, Products)            │
-└───────────────────────────┬─────────────────────────────────────┘
-                            │  Upload
-                            ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                       AMAZON S3                                 │
-│              s3://<bucket>/raw/retail/                          │
-└───────────────────────────┬─────────────────────────────────────┘
-                            │  Auto Loader (incremental ingestion)
-                            ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                    DELTA LAKE — BRONZE                          │
-│         Raw, unmodified data. Append-only. Schema inferred.     │
-│   Tables: bronze.orders | bronze.customers | bronze.products    │
-└───────────────────────────┬─────────────────────────────────────┘
-                            │  Spark Transformations
-                            ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                    DELTA LAKE — SILVER                          │
-│    Cleaned, deduplicated, type-cast, joined data.               │
-│   Tables: silver.orders | silver.customers | silver.products    │
-└───────────────────────────┬─────────────────────────────────────┘
-                            │  dbt Models
-                            ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                    DELTA LAKE — GOLD                            │
-│    Business-level aggregates ready for reporting.               │
-│   Tables: gold.daily_sales | gold.top_customers | gold.revenue  │
-└───────────────────────────┬─────────────────────────────────────┘
-                            │
-              ┌─────────────┴──────────────┐
-              ▼                            ▼
-┌─────────────────────┐       ┌────────────────────────┐
-│   UNITY CATALOG     │       │      POWER BI          │
-│  Governance,        │       │  Sales Dashboard       │
-│  Lineage, Access    │       │  Customer Analytics    │
-└─────────────────────┘       └────────────────────────┘
+┌────────────────────────────────────────────────────────────────────┐
+│                         DATA SOURCES                               │
+│              CSV Files (Orders, Customers, Products)               │
+└──────────────────────────────┬─────────────────────────────────────┘
+                            Upload
+                               │  
+                               ▼
+ ┌─────────────────────────────────────────────────────────────────┐
+ │                          AMAZON S3                              │
+ │                   s3://<bucket>/raw/retail/                     │
+ └──────────────────────────────┬──────────────────────────────────┘
+                                │
+                Auto Loader (incremental ingestion)
+                                │
+                                ▼
+ ┌─────────────────────────────────────────────────────────────────┐
+ │                    DELTA LAKE — BRONZE                          │
+ │         Raw, unmodified data. Append-only. Schema inferred.     │
+ │   Tables: bronze.orders | bronze.customers | bronze.products    │
+ └──────────────────────────────┬──────────────────────────────────┘
+                                │
+                       Spark Transformations
+                                │
+                                ▼
+ ┌─────────────────────────────────────────────────────────────────┐
+ │                    DELTA LAKE — SILVER                          │
+ │    Cleaned, deduplicated, type-cast, joined data.               │
+ │   Tables: silver.orders | silver.customers | silver.products    │
+ └──────────────────────────────┬──────────────────────────────────┘
+                                │
+                            dbt Models
+                                │
+                                ▼
+ ┌─────────────────────────────────────────────────────────────────┐
+ │                    DELTA LAKE — GOLD                            │
+ │    Business-level aggregates ready for reporting.               │
+ │   Tables: gold.daily_sales | gold.top_customers | gold.revenue  │
+ └──────────────────────────────┬──────────────────────────────────┘
+                                │
+                  ┌─────────────┴──────────────┐
+                  ▼                            ▼
+      ┌─────────────────────┐       ┌────────────────────────┐
+      │   UNITY CATALOG     │       │      POWER BI          │
+      │  Governance,        │       │  Sales Dashboard       │
+      │  Lineage, Access    │       │  Customer Analytics    │
+      └─────────────────────┘       └────────────────────────┘
 
          Orchestration: Airflow / Databricks Workflows
          IaC: Terraform  |  CI/CD: GitHub Actions
