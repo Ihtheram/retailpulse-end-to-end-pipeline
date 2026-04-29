@@ -16,15 +16,15 @@ This project is designed for **first-time data engineers** who want hands-on exp
 
 By completing this project, you will have hands-on experience with:
 
-- Ingesting raw files incrementally from S3 using **Databricks Auto Loader**
-- Building a **Medallion Architecture** (Bronze / Silver / Gold) with **Delta Lake**
-- Writing scalable data transformations with **Apache Spark** on **Databricks**
-- Modeling and testing data transformations with **dbt**
-- Governing data assets (lineage, access control, tagging) using **Unity Catalog**
-- Orchestrating pipeline runs with **Apache Airflow** (or **Databricks Workflows**)
-- Provisioning cloud infrastructure as code with **Terraform**
-- Automating deployment with **GitHub Actions**
-- Visualizing business KPIs in **Power BI**
+* Ingesting raw files incrementally from S3 using **Databricks Auto Loader**
+* Building a **Medallion Architecture** (Bronze / Silver / Gold) with **Delta Lake**
+* Writing scalable data transformations with **Apache Spark** on **Databricks**
+* Modeling and testing data transformations with **dbt**
+* Governing data assets (lineage, access control, tagging) using **Unity Catalog**
+* Orchestrating pipeline runs with **Apache Airflow** (or **Databricks Workflows**)
+* Provisioning cloud infrastructure as code with **Terraform**
+* Automating deployment with **GitHub Actions**
+* Visualizing business KPIs in **Power BI**
 
 ---
 
@@ -33,10 +33,10 @@ By completing this project, you will have hands-on experience with:
 We use a **synthetic retail dataset** that simulates a small e-commerce business. You can generate it locally using the provided script, or download the CSV files from the `/data/sample/` folder in this repo.
 
 | File | Description | Rows (sample) |
-|---|---|---|
-| `orders.csv` | Order transactions (order_id, customer_id, product_id, amount, date) | ~500K |
-| `customers.csv` | Customer profiles (customer_id, name, city, country, signup_date) | ~50K |
-| `products.csv` | Product catalog (product_id, name, category, price, stock_qty) | ~5K |
+| --- | --- | --- |
+| `orders.csv` | Order transactions (order_id, customer\_id, product\_id, amount, date) | ~500K |
+| `customers.csv` | Customer profiles (customer\_id, name, city, country, signup\_date) | ~50K |
+| `products.csv` | Product catalog (product\_id, name, category, price, stock\_qty) | ~5K |
 
 Upload these files to your S3 bucket under the path: `s3://<your-bucket>/raw/retail/`
 
@@ -101,7 +101,7 @@ Upload these files to your S3 bucket under the path: `s3://<your-bucket>/raw/ret
 ## 🧰 Tech Stack
 
 | Layer | Tool |
-|---|---|
+| --- | --- |
 | Cloud Storage | Amazon S3 |
 | Ingestion | Databricks Auto Loader |
 | Lakehouse Format | Delta Lake |
@@ -176,15 +176,15 @@ retailpulse/
 
 Before you begin, make sure you have:
 
-- [ ] An **AWS account** with S3 access
-- [ ] **Python 3.9+** and **pip** installed
-- [ ] **dbt-databricks** adapter installed (`pip install dbt-databricks`)
-- [ ] **Apache Airflow** installed locally or via Docker (`pip install apache-airflow`)
-- [ ] **Power BI Desktop** installed (Windows only; use Power BI web on Mac)
-- [ ] **Git** and a **GitHub account**
+* An **AWS account** with S3 access
 * A **Databricks account** (Free Edition works for learning; see infrastructure note below)
 * **Terraform** installed locally (`>= 1.3`) — download the **Windows AMD64** binary from [developer.hashicorp.com/terraform/install](https://developer.hashicorp.com/terraform/install)
 * **AWS CLI** installed and configured (`aws configure`) — download from [aws.amazon.com/cli](https://aws.amazon.com/cli)
+* **Python 3.9+** and **pip** installed
+* **dbt-databricks** adapter installed (`pip install dbt-databricks`)
+* **Apache Airflow** installed locally or via Docker (`pip install apache-airflow`)
+* **Power BI Desktop** installed (Windows only; use Power BI web on Mac)
+* **Git** and a **GitHub account**
 
 ---
 
@@ -340,9 +340,9 @@ The DAG runs the full pipeline in order:
 
 In a full workspace, you would explore:
 
-- **Data lineage**: See how `gold.daily_sales` traces back to `bronze.orders`
-- **Access control**: Try granting and revoking table-level permissions
-- **Tags**: Tag tables with `pii`, `financial`, or `public` labels
+* **Data lineage**: See how `gold.daily_sales` traces back to `bronze.orders`
+* **Access control**: Grant and revoke table-level permissions
+* **Tags**: Tag tables with `pii`, `financial`, or `public` labels
 
 ---
 
@@ -353,10 +353,10 @@ In a full workspace, you would explore:
 3. Enter your **Databricks SQL warehouse** HTTP path and server hostname (found in Databricks SQL → SQL Warehouses → Connection Details)
 4. Connect to the `gold` schema tables
 5. Open `powerbi/RetailPulse.pbix` or build your own dashboard with these suggested visuals:
-   - 📊 Daily Revenue Trend (line chart)
-   - 🏆 Top 10 Customers by Spend (bar chart)
-   - 🗺️ Sales by Country (map)
-   - 📦 Revenue by Product Category (donut chart)
+   * 📊 Daily Revenue Trend (line chart)
+   * 🏆 Top 10 Customers by Spend (bar chart)
+   * 🗺️ Sales by Country (map)
+   * 📦 Revenue by Product Category (donut chart)
 
 ---
 
@@ -364,8 +364,8 @@ In a full workspace, you would explore:
 
 Push your code to GitHub. The workflows in `.github/workflows/` will automatically:
 
-- **On Pull Request** (`ci.yml`): Run `dbt test` to validate your models don't break
-- **On merge to `main`** (`deploy.yml`): Deploy updated notebooks and dbt models to Databricks
+* **On Pull Request** (`ci.yml`): Run `dbt test` to validate your models don't break
+* **On merge to `main`** (`deploy.yml`): Deploy updated notebooks and dbt models to Databricks
 
 > 💡 You will need to add these GitHub Secrets in your repo settings:
 > `DATABRICKS_HOST`, `DATABRICKS_TOKEN`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`
@@ -375,7 +375,7 @@ Push your code to GitHub. The workflows in `.github/workflows/` will automatical
 ## 📊 Gold Layer — What You're Building Toward
 
 | Table | Description | Used In Power BI |
-|---|---|---|
+| --- | --- | --- |
 | `gold.daily_sales` | Revenue aggregated by day | Daily Revenue Trend chart |
 | `gold.top_customers` | Lifetime value per customer | Top Customers bar chart |
 | `gold.revenue_by_category` | Revenue broken down by product category | Category donut chart |
@@ -440,11 +440,11 @@ Week 4 — DevOps
 
 Once you've completed the core pipeline, try these to deepen your skills:
 
-- **Add a streaming layer**: Use Databricks Structured Streaming to simulate real-time order ingestion
-- **Add data contracts**: Use dbt contracts to enforce column types and constraints at the model level
-- **Add Great Expectations**: Integrate GE for richer data quality profiling beyond dbt tests
-- **Automate data generation**: Schedule `generate_data.py` to drop new files every hour to simulate continuous ingestion
-- **Cost monitoring**: Use Databricks' cost management UI to understand what each notebook run costs
+* **Add a streaming layer**: Use Databricks Structured Streaming to simulate real-time order ingestion
+* **Add data contracts**: Use dbt contracts to enforce column types and constraints at the model level
+* **Add Great Expectations**: Integrate GE for richer data quality profiling beyond dbt tests
+* **Automate data generation**: Schedule `generate_data.py` to drop new files every hour to simulate continuous ingestion
+* **Cost monitoring**: Use Databricks' cost management UI to understand what each notebook run costs
 
 ---
 
@@ -462,10 +462,10 @@ GPL-3.0 License — free to use, modify, and share for learning purposes.
 
 ## 🙏 Acknowledgements
 
-- [Databricks Documentation](https://docs.databricks.com)
-- [dbt Documentation](https://docs.getdbt.com)
-- [The Data Engineering Cookbook](https://github.com/andkret/Cookbook) by Andreas Kretz
-- [Delta Lake Documentation](https://docs.delta.io)
+* [Databricks Documentation](https://docs.databricks.com)
+* [dbt Documentation](https://docs.getdbt.com)
+* [The Data Engineering Cookbook](https://github.com/andkret/Cookbook) by Andreas Kretz
+* [Delta Lake Documentation](https://docs.delta.io)
 
 ---
 
