@@ -122,9 +122,11 @@ Upload these files to your S3 bucket under the path: `s3://<your-bucket>/raw/ret
 retailpulse/
 │
 ├── terraform/                    # Infrastructure provisioning
-│   ├── main.tf                   # Databricks workspace, S3 bucket, Unity Catalog
-│   ├── variables.tf
-│   └── outputs.tf
+│   ├── versions.tf               # Terraform and provider version constraints
+│   ├── providers.tf              # AWS provider configuration
+│   ├── variables.tf              # Input variable declarations
+│   ├── terraform.tfvars          # Variable values (excluded from version control)
+│   └── main.tf                   # S3 bucket and resource definitions
 │
 ├── notebooks/                    # Databricks notebooks
 │   ├── 01_bronze_ingestion.py    # Auto Loader → Bronze Delta tables
@@ -175,13 +177,14 @@ retailpulse/
 Before you begin, make sure you have:
 
 - [ ] An **AWS account** with S3 access
-- [ ] A **Databricks account** (Community Edition works for learning, but a paid workspace is needed for Unity Catalog)
-- [ ] **Terraform** installed locally (`>= 1.3`)
 - [ ] **Python 3.9+** and **pip** installed
 - [ ] **dbt-databricks** adapter installed (`pip install dbt-databricks`)
 - [ ] **Apache Airflow** installed locally or via Docker (`pip install apache-airflow`)
 - [ ] **Power BI Desktop** installed (Windows only; use Power BI web on Mac)
 - [ ] **Git** and a **GitHub account**
+* A **Databricks account** (Free Edition works for learning; see infrastructure note below)
+* **Terraform** installed locally (`>= 1.3`) — download the **Windows AMD64** binary from [developer.hashicorp.com/terraform/install](https://developer.hashicorp.com/terraform/install)
+* **AWS CLI** installed and configured (`aws configure`) — download from [aws.amazon.com/cli](https://aws.amazon.com/cli)
 
 ---
 
@@ -200,16 +203,46 @@ pip install -r requirements.txt
 ```bash
 cd terraform/
 terraform init
-terraform plan
-terraform apply
+terraform plan -out=tfplan
+terraform apply tfplan
 ```
 
-This will create:
-- An S3 bucket for your raw data landing zone
-- A Databricks Unity Catalog metastore
-- Three schemas: `bronze`, `silver`, `gold`
+This provisions:
 
-> 💡 **Tip for beginners:** Read through `main.tf` carefully before applying. Understand what each resource block creates. This is how real data teams manage infrastructure.
+* ✅ An **S3 bucket** (`retailpulse-raw-data-landing`) for the raw data landing zone
+
+> **⚠️ Infrastructure Note — Databricks & Unity Catalog**
+>
+> In a **production environment**, this Terraform configuration would also provision:
+> - A **Databricks workspace** on AWS (via the `databricks/databricks` Terraform provider)
+> - A **Unity Catalog metastore** for data governance, lineage, and access control
+> - Three managed **schemas**: `bronze`, `silver`, `gold`
+>
+> This requires AWS networking resources (VPC, subnets, NAT Gateway, IAM cross-account roles)
+> and incurs ongoing AWS costs even when idle.
+>
+> For this project, **Databricks Free Edition** is used instead:
+> - The workspace is provisioned manually via [databricks.com](https://databricks.com)
+> - The `bronze`, `silver`, and `gold` schemas are created directly via SQL (see below)
+> - Unity Catalog is not available in Free Edition; governance features are documented only
+>
+> This is a common and accepted approach for personal/learning projects. The Terraform
+> provider configuration for a full production setup would include the `databricks` provider
+> in `versions.tf` and workspace + metastore resource blocks in `main.tf`.
+
+---
+
+### Step 2b — Create Databricks Schemas (Free Edition)
+
+Since Unity Catalog is not available in Databricks Free Edition, create the medallion schemas manually. Open the **SQL Editor** in your Databricks workspace and run:
+
+```sql
+CREATE DATABASE IF NOT EXISTS bronze;
+CREATE DATABASE IF NOT EXISTS silver;
+CREATE DATABASE IF NOT EXISTS gold;
+```
+
+Verify by navigating to **Catalog** in the left sidebar — all three schemas should appear.
 
 ---
 
@@ -302,9 +335,11 @@ The DAG runs the full pipeline in order:
 
 ### Step 8 — Explore Unity Catalog
 
-In your Databricks workspace, navigate to **Catalog** in the left sidebar.
+> **Note:** Unity Catalog is not available in Databricks Free Edition. In a paid workspace,
+> navigate to **Catalog** in the left sidebar to explore data lineage, access control, and tagging.
 
-Explore:
+In a full workspace, you would explore:
+
 - **Data lineage**: See how `gold.daily_sales` traces back to `bronze.orders`
 - **Access control**: Try granting and revoking table-level permissions
 - **Tags**: Tag tables with `pii`, `financial`, or `public` labels
@@ -421,7 +456,7 @@ This is a personal learning project, but PRs are welcome! If you find a bug, hav
 
 ## 📄 License
 
-MIT License — free to use, modify, and share for learning purposes.
+GPL-3.0 License — free to use, modify, and share for learning purposes.
 
 ---
 
