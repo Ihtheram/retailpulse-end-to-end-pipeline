@@ -129,9 +129,12 @@ retailpulse/
 │   └── main.tf                   # S3 bucket and resource definitions
 │
 ├── notebooks/                    # Databricks notebooks
-│   ├── 01_bronze_ingestion.py    # Auto Loader → Bronze Delta tables
-│   ├── 02_silver_cleaning.py     # Bronze → Silver transformations (Spark)
-│   └── 03_gold_aggregation.py    # Silver → Gold aggregations (Spark)
+│   ├── explorations/             
+│   │   ├── retailpulse_01_delta_lake_exploration     
+│   └── pipeline/                   
+│       ├── retailpulse_01_bronze_ingestion       # Auto Loader → Bronze Delta tables
+│       ├── retailpulse_02_silver_cleaning.py     # Bronze → Silver transformations (Spark)
+│       └── retailpulse_03_gold_aggregation.py    # Silver → Gold aggregations (Spark)
 │
 ├── dbt_retailpulse/              # dbt project for Gold layer modeling
 │   ├── models/
