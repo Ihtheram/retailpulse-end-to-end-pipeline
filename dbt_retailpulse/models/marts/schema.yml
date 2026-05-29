@@ -1,0 +1,33 @@
+version: 2
+
+models:
+  - name: daily_sales
+    columns:
+      - name: order_date
+        tests:
+          - not_null
+          - unique
+
+  - name: top_customers
+    columns:
+      - name: customer_id
+        tests:
+          - not_null
+          - unique
+      - name: lifetime_value
+        tests:
+          - not_null
+
+  - name: revenue_by_category
+    columns:
+      - name: category
+        tests:
+          - not_null
+          - unique
+
+  - name: orders_by_country
+    columns:
+      - name: country
+        tests:
+          - not_null
+          - unique
